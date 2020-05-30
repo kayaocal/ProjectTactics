@@ -4,10 +4,12 @@
 #include "PTMatchGameMode.h"
 #include "PT/Prerequisties.h"
 #include "PT/GameStates/PTMatchGameState.h"
+#include "PT/PlayerControllers/PTMatchPlayerController.h"
 
 APTMatchGameMode::APTMatchGameMode()
 {
 	GameStateClass = APTMatchGameState::StaticClass();
+	PlayerControllerClass = APTMatchPlayerController::StaticClass();
 }
 
 void APTMatchGameMode::PostLogin(APlayerController* NewPlayer)
