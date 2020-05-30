@@ -14,5 +14,9 @@ class PT_API APTMatchGameState : public AGameState
 {
 	GENERATED_BODY()
 
+	APTMatchGameState ();
+	
 	virtual void AddPlayerState(APlayerState* PlayerState) override;
+
+	virtual void Tick(float DeltaTime) override;
 };

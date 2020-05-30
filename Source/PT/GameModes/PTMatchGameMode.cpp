@@ -14,14 +14,25 @@ APTMatchGameMode::APTMatchGameMode()
 
 void APTMatchGameMode::PostLogin(APlayerController* NewPlayer)
 {
+	int NumOfPlayers = GetNumPlayers();
 	Super::PostLogin(NewPlayer);
 
 	if(HasAuthority())
 	{
 		LOG_W("Post Login is called for authory");
+		APTMatchPlayerController* PTController = Cast<APTMatchPlayerController>(NewPlayer);
+		if(PTController)
+		{
+			if(NumOfPlayers < ETeam::TeamCount && NumOfPlayers>=0)
+			{
+				PTController->Team = static_cast<ETeam>(NumOfPlayers);
+				PTController->SetName(FString::Printf( TEXT("Player_%d"), NumOfPlayers));
+			}
+		}
 	}
 	else
 	{
 		LOG_W("Post Login is called for unauthory");
 	}
+
 }
