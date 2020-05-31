@@ -2,14 +2,24 @@
 
 
 #include "PTMatchGameMode.h"
+
+#include "ClothingSystemEditor/Private/ClothingSystemEditorPrivatePCH.h"
 #include "PT/Prerequisties.h"
 #include "PT/GameStates/PTMatchGameState.h"
 #include "PT/PlayerControllers/PTMatchPlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "PT/PlayerStates/PTMatchPlayerState.h"
 
 APTMatchGameMode::APTMatchGameMode()
 {
 	GameStateClass = APTMatchGameState::StaticClass();
 	PlayerControllerClass = APTMatchPlayerController::StaticClass();
+	PlayerStateClass = APTMatchPlayerState::StaticClass();
+	
+	SetMatchTargetStatus(EMatchStatus::Idle);
+	ChangeMatchStatus();
+	
+	HasAuthority() ? PrimaryActorTick.bCanEverTick = true : PrimaryActorTick.bCanEverTick = false;
 }
 
 void APTMatchGameMode::PostLogin(APlayerController* NewPlayer)
@@ -23,10 +33,20 @@ void APTMatchGameMode::PostLogin(APlayerController* NewPlayer)
 		APTMatchPlayerController* PTController = Cast<APTMatchPlayerController>(NewPlayer);
 		if(PTController)
 		{
+			ConnectedPlayerList.push_back(PTController);
 			if(NumOfPlayers < ETeam::TeamCount && NumOfPlayers>=0)
 			{
-				PTController->Team = static_cast<ETeam>(NumOfPlayers);
-				PTController->SetName(FString::Printf( TEXT("Player_%d"), NumOfPlayers));
+				APTMatchPlayerState* PState = Cast<APTMatchPlayerState>(PTController->PlayerState);
+				if(PState)
+				{
+					PState->Team = static_cast<ETeam>(NumOfPlayers);
+					PState->SetPlayerName(FString::Printf( TEXT("Player_%d"), NumOfPlayers));
+				}
+				else
+				{
+					LOG_ERR("Player State is null. Should not be");
+				}
+				
 			}
 		}
 	}
@@ -36,3 +56,119 @@ void APTMatchGameMode::PostLogin(APlayerController* NewPlayer)
 	}
 
 }
+
+void APTMatchGameMode::Logout(AController* Exiting)
+{
+	if(HasAuthority())
+	{
+		LOG_W("Logout is called for authory");
+	}
+	else
+	{
+		LOG_W("Logout is called for unauthory");
+	}
+
+	for(int i = 0; i < ConnectedPlayerList.size(); i++)
+	{
+		if(ConnectedPlayerList[i] == Exiting)
+		{
+			LOG("\n Erasing Player from list...");
+		}
+	}
+}
+
+void APTMatchGameMode::Tick(float DeltaSeconds)
+{
+	if(GameState == nullptr)
+	{
+		GameState = Cast<APTMatchGameState>(UGameplayStatics::GetGameState(this));
+		return;
+	}
+	
+	if(TargetStatus != GameState->MatchStatus)
+	{
+		HangOnStatusChangeTimer-=DeltaSeconds;
+		if(HangOnStatusChangeTimer <= 0.0f)
+		{
+			ChangeMatchStatus();
+		}
+		return;
+	}
+	
+	if(GameState->MatchStatus == EMatchStatus::Idle)
+	{
+		const uint8 NumOfPlayers = static_cast<uint8>(GetNumPlayers());
+
+		StatusTimer -= DeltaSeconds;
+		if(NumOfPlayers == GetExceptedNumOfPlayers() || StatusTimer <= 0.0f)
+		{
+			//TODO: Check if match can started
+
+
+			//Match is ready to start, so assign teams and stuff.
+
+			
+			HangOnStatusChangeTimer = HangOnIdleStatusChangeTime;
+			SetMatchTargetStatus(EMatchStatus::PreResuming);
+		}
+	}
+	else if(GameState->MatchStatus == EMatchStatus::PreResuming)
+	{
+		StatusTimer -= DeltaSeconds;
+		if(StatusTimer <= 0.0f)
+		{
+			HangOnStatusChangeTimer = 1.0f;
+			SetMatchTargetStatus(EMatchStatus::Resuming);
+		}
+	}
+
+}
+
+void APTMatchGameMode::SetMatchTargetStatus(EMatchStatus TStatus)
+{
+	TargetStatus = TStatus;
+}
+
+void APTMatchGameMode::ChangeMatchStatus()
+{
+	LOG("Match Status is changed to %d ", TargetStatus);
+
+	if(GameState)
+	{
+		GameState->SetMatchStatus(TargetStatus);
+		switch(GameState->MatchStatus)
+		{
+			case EMatchStatus::Idle:
+				StatusTimer = IdleStatusRemainingTime;
+			break;
+			case EMatchStatus::PreResuming:
+				StatusTimer = PreResumingStatusRemainingTime;
+			break;
+			default:
+				StatusTimer = -1;
+			break;
+	
+		}
+	
+		if(HasAuthority() && TargetStatus != EMatchStatus::Idle)
+		{
+			LOG("Sending New Status to clients");
+			uint8 NewStatus = static_cast<uint8>(TargetStatus);
+		
+			int NumOfPlayers = GetNumPlayers();
+			for(int i = 0; i < ConnectedPlayerList.size(); i++)
+			{
+				ConnectedPlayerList[i]->CE_MatchStatusIsChanged(NewStatus);
+			}
+			
+		}
+		
+	}
+}
+
+int APTMatchGameMode::GetExceptedNumOfPlayers()
+{
+	return 2;
+}
+
+

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerStart.h"
-#include "PT/Prerequisties.h"
+#include "PT/Game/PTMatchPrerequisties.h"
 
 #include "TacticalUnitPlayerStart.generated.h"
 
@@ -17,7 +17,6 @@ class PT_API ATacticalUnitPlayerStart : public APlayerStart
 	GENERATED_BODY()
 
 	public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TEnumAsByte<ETeam> Team;
+
 	
 };

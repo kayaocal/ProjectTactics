@@ -9,7 +9,7 @@
 APTMatchGameState::APTMatchGameState()
 	:AGameState()
 {
-//	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void APTMatchGameState::AddPlayerState(APlayerState* PlayerState)
@@ -27,5 +27,18 @@ void APTMatchGameState::AddPlayerState(APlayerState* PlayerState)
 
 void APTMatchGameState::Tick(float DeltaTime)
 {
+	if(!HasAuthority())
+	{
+		//LOG(" Current Match Status : %d", static_cast<int>(MatchStatus));
+	}
+}
 
+void APTMatchGameState::SetMatchStatus(EMatchStatus TargetStatus)
+{
+	MatchStatus = TargetStatus;
+}
+
+EMatchStatus APTMatchGameState::GetMatchStatus()
+{
+	return MatchStatus;
 }

@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
+#include "PT/Game/PTMatchPrerequisties.h"
+
 #include "PTMatchGameState.generated.h"
 
 /**
@@ -19,4 +21,13 @@ class PT_API APTMatchGameState : public AGameState
 	virtual void AddPlayerState(APlayerState* PlayerState) override;
 
 	virtual void Tick(float DeltaTime) override;
+
+	public:
+
+	UPROPERTY()
+	TEnumAsByte<EMatchStatus> MatchStatus = EMatchStatus::Idle;
+
+
+	void SetMatchStatus(EMatchStatus TargetStatus);
+	EMatchStatus GetMatchStatus();
 };
