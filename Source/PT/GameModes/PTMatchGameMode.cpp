@@ -126,7 +126,7 @@ void APTMatchGameMode::Tick(float DeltaSeconds)
 
 void APTMatchGameMode::SetMatchTargetStatus(EMatchStatus TStatus)
 {
-	TargetStatus = TStatus;
+	TargetStatus = static_cast<uint8>(TStatus);
 }
 
 void APTMatchGameMode::ChangeMatchStatus()
@@ -135,7 +135,7 @@ void APTMatchGameMode::ChangeMatchStatus()
 
 	if(GameState)
 	{
-		GameState->SetMatchStatus(TargetStatus);
+		GameState->SetMatchStatus(static_cast<EMatchStatus>(TargetStatus));
 		switch(GameState->MatchStatus)
 		{
 			case EMatchStatus::Idle:
@@ -150,19 +150,6 @@ void APTMatchGameMode::ChangeMatchStatus()
 	
 		}
 	
-		if(HasAuthority() && TargetStatus != EMatchStatus::Idle)
-		{
-			LOG("Sending New Status to clients");
-			uint8 NewStatus = static_cast<uint8>(TargetStatus);
-		
-			int NumOfPlayers = GetNumPlayers();
-			for(int i = 0; i < ConnectedPlayerList.size(); i++)
-			{
-				ConnectedPlayerList[i]->CE_MatchStatusIsChanged(NewStatus);
-			}
-			
-		}
-		
 	}
 }
 

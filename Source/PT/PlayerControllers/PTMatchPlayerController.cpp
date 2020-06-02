@@ -16,23 +16,3 @@ void APTMatchPlayerController::Tick(float DeltaTime)
 	
 }
 
-void APTMatchPlayerController::CE_MatchStatusIsChanged_Implementation(const uint8 NewMatchStatus)
-{
-	if(!HasAuthority())
-	{
-		LOG(" UnAuthority Match status is changed to : %d ", NewMatchStatus);
-	}
-	else
-	{
-		LOG(" Authority Match status is changed to : %d ", NewMatchStatus);
-	}
-	APTMatchGameState* GameState = Cast<APTMatchGameState>(UGameplayStatics::GetGameState(this));
-	if(GameState)
-	{
-		GameState->SetMatchStatus(static_cast<EMatchStatus>(NewMatchStatus));
-	}
-	else
-	{
-		LOG_ERR(" Match status is changed but GameState is null");
-	}
-}

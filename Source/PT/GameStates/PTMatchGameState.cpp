@@ -4,7 +4,7 @@
 #include "PTMatchGameState.h"
 #include "PT/Prerequisties.h"
 #include "GameFramework/PlayerState.h"
-
+#include "Net/UnrealNetwork.h"
 
 APTMatchGameState::APTMatchGameState()
 	:AGameState()
@@ -33,12 +33,30 @@ void APTMatchGameState::Tick(float DeltaTime)
 	}
 }
 
+void APTMatchGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(APTMatchGameState, MatchStatus);
+}
+
 void APTMatchGameState::SetMatchStatus(EMatchStatus TargetStatus)
 {
 	MatchStatus = TargetStatus;
 }
 
-EMatchStatus APTMatchGameState::GetMatchStatus()
+uint8 APTMatchGameState::GetMatchStatus()
 {
 	return MatchStatus;
+}
+
+void APTMatchGameState::OnRep_MatchStatusChanged()
+{
+	if(!HasAuthority())
+	{
+		LOG(" UnAuthority Match status is changed to : %d ", MatchStatus);
+	}
+	else
+	{
+		LOG(" Authority Match status is changed to : %d ", MatchStatus);
+	}
 }

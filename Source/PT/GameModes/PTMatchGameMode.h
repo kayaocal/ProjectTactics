@@ -30,7 +30,7 @@ class PT_API APTMatchGameMode : public AGameMode
 	virtual void Logout(AController* Exiting) override;
 	virtual void Tick(float DeltaSeconds) override;
 
-	EMatchStatus TargetStatus;
+	uint8 TargetStatus;
 	void SetMatchTargetStatus(EMatchStatus TStatus);
 	void ChangeMatchStatus();
 

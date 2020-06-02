@@ -24,10 +24,15 @@ class PT_API APTMatchGameState : public AGameState
 
 	public:
 
-	UPROPERTY()
-	TEnumAsByte<EMatchStatus> MatchStatus = EMatchStatus::Idle;
+	UPROPERTY(ReplicatedUsing=OnRep_MatchStatusChanged, BlueprintReadOnly)
+	uint8 MatchStatus = static_cast<uint8>(EMatchStatus::Idle);
 
 
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	void SetMatchStatus(EMatchStatus TargetStatus);
-	EMatchStatus GetMatchStatus();
+	uint8 GetMatchStatus();
+
+	UFUNCTION()
+	void OnRep_MatchStatusChanged();
 };
