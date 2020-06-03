@@ -2,6 +2,8 @@
 
 
 #include "TacticalUnitPawn.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ATacticalUnitPawn::ATacticalUnitPawn()
@@ -9,6 +11,17 @@ ATacticalUnitPawn::ATacticalUnitPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(FName("SkeletalMesh"));
+	SkeletalMesh->SetupAttachment(RootComponent);
+
+	
+
+	CapsuleComp = CreateDefaultSubobject<UCapsuleComponent>(FName("Collider"));
+	CapsuleComp->SetupAttachment(SkeletalMesh);
+	CapsuleComp->SetRelativeLocation(FVector(0.0f,0.0f,90.0f));
+	CapsuleComp->SetCapsuleSize(90.0f, false);
+	CapsuleComp->SetCapsuleRadius(25.0f, false);
 }
 
 // Called when the game starts or when spawned

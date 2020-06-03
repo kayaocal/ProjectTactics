@@ -11,9 +11,16 @@ class PT_API ATacticalUnitPawn : public APawn
 {
 	GENERATED_BODY()
 
+	
 public:
 	// Sets default values for this pawn's properties
 	ATacticalUnitPawn();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class USkeletalMeshComponent* SkeletalMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UCapsuleComponent* CapsuleComp;
 
 protected:
 	// Called when the game starts or when spawned
