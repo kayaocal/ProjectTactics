@@ -18,5 +18,6 @@ class PT_API ATacticalUnitPlayerStart : public APlayerStart
 
 	public:
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	uint8 Team;
 };

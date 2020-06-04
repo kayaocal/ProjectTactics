@@ -19,7 +19,7 @@ public:
 	APTMatchPlayerState();
 	
 	UPROPERTY(ReplicatedUsing=OnRep_TeamIsChanged, BlueprintReadOnly)
-	TEnumAsByte<ETeam> Team = ETeam::TeamCount;
+	uint8 Team = 0;
 
 	UFUNCTION()
 	void OnRep_TeamIsChanged();

@@ -4,13 +4,18 @@
 #include "TacticalUnitPawn.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "PT/Prerequisties.h"
 
 // Sets default values
 ATacticalUnitPawn::ATacticalUnitPawn()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	SetRemoteRoleForBackwardsCompat(ROLE_SimulatedProxy);
+	bReplicates = true;
+	SetReplicates(true);
+	SetReplicateMovement(true);
+	
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(FName("SkeletalMesh"));
 	SkeletalMesh->SetupAttachment(RootComponent);
@@ -28,7 +33,7 @@ ATacticalUnitPawn::ATacticalUnitPawn()
 void ATacticalUnitPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	LOG("BEGIN PLAY");
 }
 
 // Called every frame

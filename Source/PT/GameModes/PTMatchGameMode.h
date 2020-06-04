@@ -30,10 +30,15 @@ class PT_API APTMatchGameMode : public AGameMode
 	virtual void Logout(AController* Exiting) override;
 	virtual void Tick(float DeltaSeconds) override;
 
-	uint8 TargetStatus;
-	void SetMatchTargetCondition(EGameCondition TStatus);
+	uint8 TargetGameCondition;
+	uint8 TeamRound = TEAM_ROUND_NONE;
+	
+	void SetGameTargetCondition(EGameCondition TStatus);
+	void SpawnUnits();
+	void GameResumingConditionStarted();
 	void ChangeGameCondition();
 
+	void NextRound();
 	TArray<AActor*> PlayerStartActors;
 
 	int GetExceptedNumOfPlayers();

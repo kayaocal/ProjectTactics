@@ -22,6 +22,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UCapsuleComponent* CapsuleComp;
 
+	
+	uint8 Team;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

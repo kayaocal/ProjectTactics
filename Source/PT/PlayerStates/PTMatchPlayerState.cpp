@@ -8,6 +8,7 @@
 APTMatchPlayerState::APTMatchPlayerState()
 {
 	SetReplicates(true);
+	Team = 0;
 }
 
 void APTMatchPlayerState::OnRep_TeamIsChanged()
