@@ -31,9 +31,10 @@ class PT_API APTMatchGameMode : public AGameMode
 	virtual void Tick(float DeltaSeconds) override;
 
 	uint8 TargetStatus;
-	void SetMatchTargetStatus(EMatchStatus TStatus);
-	void ChangeMatchStatus();
+	void SetMatchTargetCondition(EGameCondition TStatus);
+	void ChangeGameCondition();
 
+	TArray<AActor*> PlayerStartActors;
 
 	int GetExceptedNumOfPlayers();
 

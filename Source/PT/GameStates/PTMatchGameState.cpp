@@ -36,27 +36,27 @@ void APTMatchGameState::Tick(float DeltaTime)
 void APTMatchGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(APTMatchGameState, MatchStatus);
+	DOREPLIFETIME(APTMatchGameState, GameCondition);
 }
 
-void APTMatchGameState::SetMatchStatus(EMatchStatus TargetStatus)
+void APTMatchGameState::SetGameCondition(EGameCondition TargetStatus)
 {
-	MatchStatus = TargetStatus;
+	GameCondition = TargetStatus;
 }
 
-uint8 APTMatchGameState::GetMatchStatus()
+uint8 APTMatchGameState::GetGameCondition()
 {
-	return MatchStatus;
+	return GameCondition;
 }
 
-void APTMatchGameState::OnRep_MatchStatusChanged()
+void APTMatchGameState::OnRep_GameConditionChanged()
 {
 	if(!HasAuthority())
 	{
-		LOG(" UnAuthority Match status is changed to : %d ", MatchStatus);
+		LOG(" UnAuthority Match status is changed to : %d ", GameCondition);
 	}
 	else
 	{
-		LOG(" Authority Match status is changed to : %d ", MatchStatus);
+		LOG(" Authority Match status is changed to : %d ", GameCondition);
 	}
 }

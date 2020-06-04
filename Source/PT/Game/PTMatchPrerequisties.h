@@ -3,7 +3,7 @@
 #include "UObject/ObjectMacros.h"
 
 UENUM(BlueprintType)
-enum EMatchStatus
+enum EGameCondition
 {
 	Idle = 0,
 	PreResuming = 1,
@@ -11,8 +11,10 @@ enum EMatchStatus
 	Paused = 3,
 	Resulting = 4,
 
-	StatusCount
+	ConditionCount
 };
+
+
 
 UENUM(BlueprintType)
 enum ETeam

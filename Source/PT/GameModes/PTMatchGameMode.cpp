@@ -16,8 +16,8 @@ APTMatchGameMode::APTMatchGameMode()
 	PlayerControllerClass = APTMatchPlayerController::StaticClass();
 	PlayerStateClass = APTMatchPlayerState::StaticClass();
 	
-	SetMatchTargetStatus(EMatchStatus::Idle);
-	ChangeMatchStatus();
+	SetMatchTargetCondition(EGameCondition::Idle);
+	ChangeGameCondition();
 	
 	HasAuthority() ? PrimaryActorTick.bCanEverTick = true : PrimaryActorTick.bCanEverTick = false;
 }
@@ -85,17 +85,17 @@ void APTMatchGameMode::Tick(float DeltaSeconds)
 		return;
 	}
 	
-	if(TargetStatus != GameState->MatchStatus)
+	if(TargetStatus != GameState->GameCondition)
 	{
 		HangOnStatusChangeTimer-=DeltaSeconds;
 		if(HangOnStatusChangeTimer <= 0.0f)
 		{
-			ChangeMatchStatus();
+			ChangeGameCondition();
 		}
 		return;
 	}
 	
-	if(GameState->MatchStatus == EMatchStatus::Idle)
+	if(GameState->GameCondition == EGameCondition::Idle)
 	{
 		const uint8 NumOfPlayers = static_cast<uint8>(GetNumPlayers());
 
@@ -109,39 +109,39 @@ void APTMatchGameMode::Tick(float DeltaSeconds)
 
 			
 			HangOnStatusChangeTimer = HangOnIdleStatusChangeTime;
-			SetMatchTargetStatus(EMatchStatus::PreResuming);
+			SetMatchTargetCondition(EGameCondition::PreResuming);
 		}
 	}
-	else if(GameState->MatchStatus == EMatchStatus::PreResuming)
+	else if(GameState->GameCondition == EGameCondition::PreResuming)
 	{
 		StatusTimer -= DeltaSeconds;
 		if(StatusTimer <= 0.0f)
 		{
 			HangOnStatusChangeTimer = 1.0f;
-			SetMatchTargetStatus(EMatchStatus::Resuming);
+			SetMatchTargetCondition(EGameCondition::Resuming);
 		}
 	}
 
 }
 
-void APTMatchGameMode::SetMatchTargetStatus(EMatchStatus TStatus)
+void APTMatchGameMode::SetMatchTargetCondition(EGameCondition TStatus)
 {
 	TargetStatus = static_cast<uint8>(TStatus);
 }
 
-void APTMatchGameMode::ChangeMatchStatus()
+void APTMatchGameMode::ChangeGameCondition()
 {
 	LOG("Match Status is changed to %d ", TargetStatus);
 
 	if(GameState)
 	{
-		GameState->SetMatchStatus(static_cast<EMatchStatus>(TargetStatus));
-		switch(GameState->MatchStatus)
+		GameState->SetGameCondition(static_cast<EGameCondition>(TargetStatus));
+		switch(GameState->GameCondition)
 		{
-			case EMatchStatus::Idle:
+			case EGameCondition::Idle:
 				StatusTimer = IdleStatusRemainingTime;
 			break;
-			case EMatchStatus::PreResuming:
+			case EGameCondition::PreResuming:
 				StatusTimer = PreResumingStatusRemainingTime;
 			break;
 			default:

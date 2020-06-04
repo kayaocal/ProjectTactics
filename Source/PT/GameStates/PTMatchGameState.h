@@ -24,15 +24,15 @@ class PT_API APTMatchGameState : public AGameState
 
 	public:
 
-	UPROPERTY(ReplicatedUsing=OnRep_MatchStatusChanged, BlueprintReadOnly)
-	uint8 MatchStatus = static_cast<uint8>(EMatchStatus::Idle);
+	UPROPERTY(ReplicatedUsing=OnRep_GameConditionChanged, BlueprintReadOnly)
+	uint8 GameCondition = static_cast<uint8>(EGameCondition::Idle);
 
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	void SetMatchStatus(EMatchStatus TargetStatus);
-	uint8 GetMatchStatus();
+	void SetGameCondition(EGameCondition TargetStatus);
+	uint8 GetGameCondition();
 
 	UFUNCTION()
-	void OnRep_MatchStatusChanged();
+	void OnRep_GameConditionChanged();
 };
