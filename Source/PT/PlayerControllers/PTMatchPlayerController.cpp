@@ -6,6 +6,14 @@
 #include "PT/GameModes/PTMatchGameMode.h"
 #include "PT/GameStates/PTMatchGameState.h"
 
+APTMatchPlayerController::APTMatchPlayerController()
+{
+	bShowMouseCursor = true;
+	bEnableClickEvents = true;
+	bEnableTouchEvents = true;
+}
+
+
 void APTMatchPlayerController::BeginPlay()
 {
 

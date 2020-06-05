@@ -8,6 +8,7 @@
 #include "PT/GameStates/PTMatchGameState.h"
 #include "PT/PlayerControllers/PTMatchPlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "PT/Camera/PTCameraSpectatorPawn.h"
 #include "PT/Game/TacticalUnitPlayerStart.h"
 #include "PT/Pawns/TacticalUnitPawn.h"
 #include "PT/PlayerStates/PTMatchPlayerState.h"
@@ -17,6 +18,8 @@ APTMatchGameMode::APTMatchGameMode()
 	GameStateClass = APTMatchGameState::StaticClass();
 	PlayerControllerClass = APTMatchPlayerController::StaticClass();
 	PlayerStateClass = APTMatchPlayerState::StaticClass();
+	DefaultPawnClass = APTCameraSpectatorPawn::StaticClass();
+	
 	TeamRound = TEAM_ROUND_NONE;
 	SetGameTargetCondition(EGameCondition::Idle);
 	ChangeGameCondition();

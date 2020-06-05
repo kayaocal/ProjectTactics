@@ -16,6 +16,8 @@ class PT_API APTMatchPlayerController : public APlayerController
 	GENERATED_BODY()
 
 	public:
+
+	APTMatchPlayerController();
 	
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
