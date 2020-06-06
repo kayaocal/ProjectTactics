@@ -38,12 +38,12 @@ void APTGridFloor::BeginPlay()
 	APTMatchPlayerController* PlayerController = Cast<APTMatchPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
 	if (PlayerController != nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "setset");
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "setset");
 		PlayerController->SetGridFloor(this);
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "setfail");
+		//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "setfail");
 	}
 	FVector2D StartPos = FVector2D(this->GetActorLocation().X,this->GetActorLocation().Y);
 	StartPos.X += this->RowCount * this->GridSize;

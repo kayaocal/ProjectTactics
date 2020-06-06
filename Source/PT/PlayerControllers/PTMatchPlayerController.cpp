@@ -56,7 +56,7 @@ void APTMatchPlayerController::UpdateSelectedGrid()
 		GridFloor->UpdateSelectedGrid(GridMan->GetGridBottomLeft(0), false);
 		return;
 	}
-	      GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Yellow, "ok");
+	      //GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Yellow, "ok");
 
 	GridFloor->UpdateSelectedGrid(GridMan->GetGridBottomLeft(GridIndex), true);
 }
