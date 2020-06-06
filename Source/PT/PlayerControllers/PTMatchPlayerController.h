@@ -20,6 +20,7 @@ class PT_API APTMatchPlayerController : public APlayerController
 	public:
 
 	APTMatchPlayerController();
+	
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	void UpdateSelectedGrid();

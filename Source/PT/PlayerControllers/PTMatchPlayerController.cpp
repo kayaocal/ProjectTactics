@@ -14,6 +14,7 @@ APTMatchPlayerController::APTMatchPlayerController()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+
 void APTMatchPlayerController::BeginPlay()
 {
 
