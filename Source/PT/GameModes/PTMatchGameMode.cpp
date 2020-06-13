@@ -13,6 +13,14 @@
 #include "PT/Pawns/TacticalUnitPawn.h"
 #include "PT/PlayerStates/PTMatchPlayerState.h"
 
+void APTMatchGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId,
+	FString& ErrorMessage)
+{
+	Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
+}
+
+
+
 APTMatchGameMode::APTMatchGameMode()
 {
 	GameStateClass = APTMatchGameState::StaticClass();
@@ -21,14 +29,15 @@ APTMatchGameMode::APTMatchGameMode()
 	DefaultPawnClass = APTCameraSpectatorPawn::StaticClass();
 	
 	TeamRound = TEAM_ROUND_NONE;
-	SetGameTargetCondition(EGameCondition::Idle);
-	ChangeGameCondition();
-	
+	TargetGameCondition = 255;
+
 	HasAuthority() ? PrimaryActorTick.bCanEverTick = true : PrimaryActorTick.bCanEverTick = false;
 }
 
+
+
 void APTMatchGameMode::PostLogin(APlayerController* NewPlayer)
-{
+ {
 	int NumOfPlayers = GetNumPlayers();
 	Super::PostLogin(NewPlayer);
 
@@ -50,6 +59,12 @@ void APTMatchGameMode::PostLogin(APlayerController* NewPlayer)
 				else
 				{
 					LOG_ERR("Player State is null. Should not be");
+				}
+
+				//All players are connected, So game can start!
+				if(NumOfPlayers+1 == GetExceptedNumOfPlayers())
+				{
+					OnIdleTimerDone();
 				}
 				
 			}
@@ -86,52 +101,28 @@ void APTMatchGameMode::Tick(float DeltaSeconds)
 {
 	if(GameState == nullptr)
 	{
-		GameState = Cast<APTMatchGameState>(UGameplayStatics::GetGameState(this));
-		return;
-	}
-	
-	if(TargetGameCondition != GameState->GameCondition)
-	{
-		HangOnStatusChangeTimer-=DeltaSeconds;
-		if(HangOnStatusChangeTimer <= 0.0f)
+		LOG("Game state is null");
+		AGameStateBase* GS = UGameplayStatics::GetGameState(this);
+		if(GS)
 		{
-			ChangeGameCondition();
+			GameState = Cast<APTMatchGameState>(GS);
+			SetGameTargetCondition(EGameCondition::Idle, 1.0f);
 		}
 		return;
-	}
-	
-	if(GameState->GameCondition == EGameCondition::Idle)
-	{
-		const uint8 NumOfPlayers = static_cast<uint8>(GetNumPlayers());
-
-		StatusTimer -= DeltaSeconds;
-		if(NumOfPlayers == GetExceptedNumOfPlayers() || StatusTimer <= 0.0f)
-		{
-			//TODO: Check if match can started
-
-
-			//Match is ready to start, so assign teams and stuff.
-
-			
-			HangOnStatusChangeTimer = HangOnIdleStatusChangeTime;
-			SetGameTargetCondition(EGameCondition::PreResuming);
-		}
-	}
-	else if(GameState->GameCondition == EGameCondition::PreResuming)
-	{
-		StatusTimer -= DeltaSeconds;
-		if(StatusTimer <= 0.0f)
-		{
-			HangOnStatusChangeTimer = 1.0f;
-			SetGameTargetCondition(EGameCondition::Resuming);
-		}
 	}
 
 }
 
-void APTMatchGameMode::SetGameTargetCondition(EGameCondition TCond)
+void APTMatchGameMode::SetGameTargetCondition(EGameCondition TCond, float TimeToWait)
 {
 	TargetGameCondition = static_cast<uint8>(TCond);
+
+	LOG(" SetGameTargetCondition");
+	if(TargetGameCondition != GameState->GameCondition)
+	{
+		
+		GetTimeManager().SetTimer(ActiveModeTimer, this, &APTMatchGameMode::ChangeGameCondition, TimeToWait, false);
+	}
 }
 
 void APTMatchGameMode::SpawnUnits()
@@ -187,7 +178,6 @@ void APTMatchGameMode::SpawnUnits()
 
 void APTMatchGameMode::GameResumingConditionStarted()
 {
-	StatusTimer = -1;
 	LOG("GameResumingConditionStarted");
 	/*Game just started. Spawn players*/
 	if(TeamRound == TEAM_ROUND_NONE && HasAuthority())
@@ -207,21 +197,45 @@ void APTMatchGameMode::ChangeGameCondition()
 		switch(GameState->GameCondition)
 		{
 			case EGameCondition::Idle:
-				StatusTimer = IdleStatusRemainingTime;
+				LOG(" Condition Idle Status Timer : %f", IdleStatusRemainingTime);
+				GetTimeManager().SetTimer(ActiveModeTimer, this, &APTMatchGameMode::OnIdleTimerDone, IdleStatusRemainingTime, false);
 			break;
 			case EGameCondition::PreResuming:
-				StatusTimer = PreResumingStatusRemainingTime;
+				LOG(" Condition PreResuming Status Timer : %f", PreResumingStatusRemainingTime);
+				GetTimeManager().SetTimer(ActiveModeTimer, this, &APTMatchGameMode::OnPreresumingTimerDone, PreResumingStatusRemainingTime, false);
 			break;
 			case EGameCondition::Resuming:
 				GameResumingConditionStarted();
-				
-			default:
-				StatusTimer = -1;
+
 			break;
 	
 		}
-	
+
+		
 	}
+}
+
+void APTMatchGameMode::OnIdleTimerDone()
+{
+	LOG("Idle Condition Timer is DONE!!");
+	SetGameTargetCondition(EGameCondition::PreResuming, HangOnIdleStatusChangeTime);
+
+}
+
+void APTMatchGameMode::OnPreresumingTimerDone()
+{
+	LOG("Preresuming Condition Timer is DONE!!");
+	SetGameTargetCondition(EGameCondition::Resuming, 1.0f);
+}
+
+void APTMatchGameMode::OnTimerDone()
+{
+	LOG("On Timer Done");
+}
+
+FTimerManager& APTMatchGameMode::GetTimeManager()
+{
+	return GetWorld()->GetTimerManager();
 }
 
 void APTMatchGameMode::NextRound()
@@ -232,6 +246,8 @@ void APTMatchGameMode::NextRound()
 	}
 	
 }
+
+
 
 int APTMatchGameMode::GetExceptedNumOfPlayers()
 {

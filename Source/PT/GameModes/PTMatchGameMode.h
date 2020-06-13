@@ -19,12 +19,17 @@ class PT_API APTMatchGameMode : public AGameMode
 	GENERATED_BODY()
 
 
-	class APTMatchGameState* GameState;
+public:
+	void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId,
+		FString& ErrorMessage) override;
+private:
+	class APTMatchGameState* GameState = nullptr;
 	std::vector<class APTMatchPlayerController*> ConnectedPlayerList;
 	
-	float StatusTimer = 0;
-	float HangOnStatusChangeTimer = 0;
-	
+	FTimerManager* TimerManager = nullptr;
+	FTimerHandle ActiveModeTimer;
+
+private:
 	APTMatchGameMode();
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void Logout(AController* Exiting) override;
@@ -33,16 +38,19 @@ class PT_API APTMatchGameMode : public AGameMode
 	uint8 TargetGameCondition;
 	uint8 TeamRound = TEAM_ROUND_NONE;
 	
-	void SetGameTargetCondition(EGameCondition TStatus);
 	void SpawnUnits();
 	void GameResumingConditionStarted();
 	void ChangeGameCondition();
-
+	void OnIdleTimerDone();
+	void OnPreresumingTimerDone();
+	void OnTimerDone();
+	FTimerManager& GetTimeManager();
 	void NextRound();
 	TArray<AActor*> PlayerStartActors;
 
 	int GetExceptedNumOfPlayers();
 
-
+public:
+	void SetGameTargetCondition(EGameCondition TCond, float TimeToWait);
 	
 };

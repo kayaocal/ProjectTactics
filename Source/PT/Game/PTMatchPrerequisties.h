@@ -24,7 +24,7 @@ enum EGameCondition
 	Resuming = 2,
 	Paused = 3,
 	Resulting = 4,
-
+	
 	ConditionCount
 };
 
@@ -40,12 +40,12 @@ enum ETeam
 	TeamCount
 };
 
-const int HangOnIdleStatusChangeTime = 3;
-const int IdleStatusRemainingTime = 30;
-const int PreResumingStatusRemainingTime = 5;
+const float HangOnIdleStatusChangeTime = 3.0f;
+const float IdleStatusRemainingTime = 30.0f;
+const float PreResumingStatusRemainingTime = 5.0f;
 
 const int MaxTeamCount = 2;
 
 
-
+	
 

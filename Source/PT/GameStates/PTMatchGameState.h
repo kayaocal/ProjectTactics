@@ -17,7 +17,11 @@ class PT_API APTMatchGameState : public AGameState
 	GENERATED_BODY()
 
 	APTMatchGameState ();
-	
+protected:
+	void BeginPlay() override;
+
+private:
+
 	virtual void AddPlayerState(APlayerState* PlayerState) override;
 
 	virtual void Tick(float DeltaTime) override;
@@ -25,7 +29,7 @@ class PT_API APTMatchGameState : public AGameState
 	public:
 
 	UPROPERTY(ReplicatedUsing=OnRep_GameConditionChanged, BlueprintReadOnly)
-	uint8 GameCondition = static_cast<uint8>(EGameCondition::Idle);
+	uint8 GameCondition = 255;
 
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

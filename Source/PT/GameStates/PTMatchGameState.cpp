@@ -5,11 +5,17 @@
 #include "PT/Prerequisties.h"
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
+#include "Kismet/GameplayStatics.h"
+#include "PT/GameModes/PTMatchGameMode.h"
 
 APTMatchGameState::APTMatchGameState()
 	:AGameState()
 {
 	PrimaryActorTick.bCanEverTick = true;
+}
+
+void APTMatchGameState::BeginPlay()
+{
 }
 
 void APTMatchGameState::AddPlayerState(APlayerState* PlayerState)
