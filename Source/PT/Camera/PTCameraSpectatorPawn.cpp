@@ -83,6 +83,8 @@ void APTCameraSpectatorPawn::LeftClickReleaseHandler()
 		return;
 	}
 
+	PlayerController->SelectCharAtMousePos();
+	
 	// switch(PlayerController->GetControllerState())
 	// {
 	// 	case SELECTION:
@@ -114,6 +116,8 @@ void APTCameraSpectatorPawn::RightClickReleaseHandler()
 	{
 		return;
 	}
+
+	PlayerController->MoveSelectedChar();
 }
 
 void APTCameraSpectatorPawn::SelectionPressed()

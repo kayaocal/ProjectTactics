@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/Character.h"
 #include "GameFramework/Pawn.h"
 #include "TacticalUnitPawn.generated.h"
 
 UCLASS()
-class PT_API ATacticalUnitPawn : public APawn
+class PT_API ATacticalUnitPawn : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -22,6 +23,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UCapsuleComponent* CapsuleComp;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UCharacterMovementComponent* MovementComp;
 	
 	uint8 Team;
 
@@ -35,5 +38,5 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	void MovePawnToPos(FVector Pos);
 };

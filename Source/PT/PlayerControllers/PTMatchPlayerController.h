@@ -6,6 +6,8 @@
 #include "PT/Prerequisties.h"
 #include "GameFramework/PlayerController.h"
 #include "PT/Game/PTGridFloor.h"
+#include "PT/Pawns/TacticalUnitPawn.h"
+
 
 #include "PTMatchPlayerController.generated.h"
 
@@ -25,7 +27,11 @@ class PT_API APTMatchPlayerController : public APlayerController
 	virtual void Tick(float DeltaTime) override;
 	void UpdateSelectedGrid();
 	void SetGridFloor(APTGridFloor* Grid);
-	
-	private:
+	void SelectCharAtMousePos();
+	void MoveSelectedChar();
+	ATacticalUnitPawn* SelectedCharacter = nullptr;
+
+private:
 	APTGridFloor* GridFloor = nullptr;
+	int SelectedGridIndex = -1;
 };
