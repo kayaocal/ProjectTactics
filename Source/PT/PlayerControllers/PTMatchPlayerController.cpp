@@ -2,12 +2,14 @@
 
 
 #include "PTMatchPlayerController.h"
+
+#include "AIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "PT/Prerequisties.h"
-#include "PT/GameModes/PTMatchGameMode.h"
-#include "PT/GameStates/PTMatchGameState.h"
+#include "PT/PlayerStates/PTMatchPlayerState.h"
 
 APTMatchPlayerController::APTMatchPlayerController()
+	:Super()
 {
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;
@@ -57,7 +59,8 @@ void APTMatchPlayerController::UpdateSelectedGrid()
 		GridFloor->UpdateSelectedGrid(GridMan->GetGridBottomLeft(0), false);
 		return;
 	}
-	      //GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Yellow, "ok");
+
+	//GEngine->AddOnScreenDebugMessage(-1, 0.1f, FColor::Yellow, "ok");
 	SelectedGridIndex = GridIndex;
 	GridFloor->UpdateSelectedGrid(GridMan->GetGridBottomLeft(GridIndex), true);
 }
@@ -77,8 +80,21 @@ void APTMatchPlayerController::SelectCharAtMousePos()
 		ATacticalUnitPawn* HitCharacter = Cast<ATacticalUnitPawn>(TraceResult.GetActor());			
 		if(HitCharacter != nullptr)
 		{
-			SelectedCharacter = HitCharacter;
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, "SELECTED");
+			APTMatchPlayerState* State = Cast<APTMatchPlayerState>(PlayerState);
+			if(State)
+			{
+				if(HitCharacter->IsAlly(State->Team))
+				{
+					SelectedCharacter = HitCharacter;
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, "SELECTED");
+					
+				}
+				else
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, "ENEMY CANT SELECTED");
+				}
+			}
+			
 		}
 		else
 		{
@@ -103,9 +119,43 @@ void APTMatchPlayerController::MoveSelectedChar()
 	
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, "Move");
 	LOG("Selected Index %d", SelectedGridIndex);
-	SelectedCharacter->MovePawnToPos(GridMan->GetGridCenter(SelectedGridIndex));
 
-	/*FVector newloc = SelectedCharacter->GetActorLocation();
-	newloc += FVector(10,0,0);
-	SelectedCharacter->SetActorLocation(newloc);*/
+	UnitMoveCommand.CharID = SelectedCharacter->UnitConstantData.CharID;
+	UnitMoveCommand.Location = GridMan->GetGridCenter(SelectedGridIndex);
+	RPC_MoveToPos(UnitMoveCommand);
+
 }
+
+void APTMatchPlayerController::RPC_MoveToPos_Implementation(FUnitMoveCommand Vec)
+{
+	TArray<AActor*> Arr;
+	//TODO: Unnecessary performance impact. Make a better way to search units on scene
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATacticalUnitPawn::StaticClass(), Arr);
+	LOG_W("RPC_MoveToPos_Implementation %d ", Arr.Num());
+
+	if(HasAuthority())
+	{
+		LOG("Authory Imp");
+	}
+	for(int i = 0; i < Arr.Num(); i++)
+	{
+		if(Arr[i])
+		{
+			ATacticalUnitPawn* Unit = Cast<ATacticalUnitPawn>(Arr[i]);
+			if(Unit)
+			{
+				if(Unit->UnitConstantData.CharID == Vec.CharID)
+				{
+					LOG("MOVE BITCH");
+					AAIController* AIController = Cast<AAIController>(Unit->GetController());
+					if(AIController)
+					{
+						AIController->MoveToLocation(Vec.Location);
+					}
+				}
+			}
+		}
+	}
+}
+
+

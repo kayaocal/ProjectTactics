@@ -11,6 +11,21 @@
 
 #include "PTMatchPlayerController.generated.h"
 
+
+
+USTRUCT(BlueprintType)
+struct FUnitMoveCommand
+{
+	GENERATED_BODY()
+
+	//TODO: This struct could be optimized for network traffic!
+	UPROPERTY(BlueprintReadOnly)
+	uint8 CharID;
+	UPROPERTY(BlueprintReadOnly)
+	FVector Location;
+	
+};
+
 /**
  * 
  */
@@ -30,6 +45,11 @@ class PT_API APTMatchPlayerController : public APlayerController
 	void SelectCharAtMousePos();
 	void MoveSelectedChar();
 	ATacticalUnitPawn* SelectedCharacter = nullptr;
+
+	FUnitMoveCommand UnitMoveCommand;
+	
+	UFUNCTION(Server, Reliable)
+	void RPC_MoveToPos(FUnitMoveCommand MoveCommand);
 
 private:
 	APTGridFloor* GridFloor = nullptr;

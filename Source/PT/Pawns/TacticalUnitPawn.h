@@ -7,6 +7,24 @@
 #include "GameFramework/Pawn.h"
 #include "TacticalUnitPawn.generated.h"
 
+
+
+USTRUCT(BlueprintType)
+struct FUnitConstantData
+{
+	GENERATED_BODY()
+
+	//TODO: This struct could be optimized for network traffic!
+	UPROPERTY(BlueprintReadOnly)
+	uint8 Team;
+	UPROPERTY(BlueprintReadOnly)
+	uint8 CharID;
+	UPROPERTY(BlueprintReadOnly)
+	FString CharName;
+	
+};
+
+
 UCLASS()
 class PT_API ATacticalUnitPawn : public ACharacter
 {
@@ -17,17 +35,18 @@ public:
 	// Sets default values for this pawn's properties
 	ATacticalUnitPawn();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class USkeletalMeshComponent* SkeletalMesh;
+	/* This is responsible of holding constant datas for pawns*/
+	UPROPERTY(ReplicatedUsing=OnConstantDataChanged, BlueprintReadOnly)
+	FUnitConstantData UnitConstantData;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class UCapsuleComponent* CapsuleComp;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class UCharacterMovementComponent* MovementComp;
+	UFUNCTION()
+	void OnConstantDataChanged();
 	
-	uint8 Team;
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	uint8 GetTeam();
+
+	bool IsAlly(uint8 GivenTeam);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -36,7 +55,4 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	void MovePawnToPos(FVector Pos);
 };

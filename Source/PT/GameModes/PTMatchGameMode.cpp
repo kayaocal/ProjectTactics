@@ -22,6 +22,7 @@ void APTMatchGameMode::PreLogin(const FString& Options, const FString& Address, 
 
 
 APTMatchGameMode::APTMatchGameMode()
+	:Super()
 {
 	GameStateClass = APTMatchGameState::StaticClass();
 	PlayerControllerClass = APTMatchPlayerController::StaticClass();
@@ -129,11 +130,13 @@ void APTMatchGameMode::SpawnUnits()
 {
 	LOG("SpanwUnits");
 	const uint8 NumOfPlayers = static_cast<uint8>(GetNumPlayers());
+	static uint8 NumOfSpawnedUnits = 0;
+	
 	for(int i = 0; i < NumOfPlayers; i++)
 	{
 		uint8 TeamID = i + 1;
 		LOG("TeamID : %d", TeamID);
-
+		
 		for( int j = 0; j < PlayerStartActors.Num(); j++)
 		{
 			LOG("j : %d", j);
@@ -162,13 +165,19 @@ void APTMatchGameMode::SpawnUnits()
 
 					UWorld* World = GetWorld();
 					FActorSpawnParameters SpawnParams;
-					SpawnParams.Owner = this;
+					SpawnParams.Owner = ConnectedPlayerList[i];
+					
 					SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-					World->SpawnActor<AActor>(GeneratedBP->GeneratedClass, UnitStartPoint->GetActorLocation(), UnitStartPoint->GetActorRotation(), SpawnParams);
-
+					AActor* ac = World->SpawnActor<AActor>(GeneratedBP->GeneratedClass, UnitStartPoint->GetActorLocation(), UnitStartPoint->GetActorRotation(), SpawnParams);
+				
+					ATacticalUnitPawn* Pawn = Cast<ATacticalUnitPawn>(ac);
+					if(Pawn)
+					{
+						Pawn->UnitConstantData = FUnitConstantData{TeamID,NumOfSpawnedUnits, "Sir Ian McAllen"};
+						NumOfSpawnedUnits++;
+					}
 					
 				//	ATacticalUnitPawn* Pawn = GetWorld()->SpawnActor<ATacticalUnitPawn>(ATacticalUnitPawn::StaticClass(), UnitStartPoint->GetActorLocation(), UnitStartPoint->GetActorRotation());
-				//	Pawn->PossessedBy(ConnectedPlayerList[i]);
 				}
 			}
 
@@ -185,6 +194,7 @@ void APTMatchGameMode::GameResumingConditionStarted()
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATacticalUnitPlayerStart::StaticClass(), PlayerStartActors);
 		SpawnUnits();
 	}
+	
 }
 
 void APTMatchGameMode::ChangeGameCondition()
@@ -253,5 +263,4 @@ int APTMatchGameMode::GetExceptedNumOfPlayers()
 {
 	return 2;
 }
-
 
