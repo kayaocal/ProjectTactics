@@ -23,11 +23,11 @@ ATacticalUnitPawn::ATacticalUnitPawn()
 	//SetRemoteRoleForBackwardsCompat(ROLE_SimulatedProxy);
 	bReplicates = true;
 	SetReplicates(true);
-	SetReplicateMovement(true);
+	//SetReplicateMovement(true);
 	
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-	GetMovementComponent()->SetIsReplicated(true);
+//	GetCapsuleComponent()->SetRelativeLocation(FVector::ZeroVector);
+	//GetMovementComponent()->SetIsReplicated(true);
 	
 }
 
@@ -41,7 +41,6 @@ void ATacticalUnitPawn::BeginPlay()
 	{
 		PlayerController->SelectedCharacter = this;
 	}
-	LOG("BEGIN PLAY");
 }
 
 // Called every frame
