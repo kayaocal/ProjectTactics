@@ -30,7 +30,7 @@ APTCameraSpectatorPawn::APTCameraSpectatorPawn(const FObjectInitializer& ObjectI
 	CameraHeightMax = 5000.f;
 
 	CameraRadius = 1100.f;
-	CameraRadiusMin = 500.f;
+	CameraRadiusMin = 100.f;
 	CameraRadiusMax = 8000.f;
 
 	CameraZAngle = 0.f;

@@ -10,6 +10,7 @@
 #include "PT/Prerequisties.h"
 #include "PT/AI/PTAIController.h"
 #include "PT/PlayerControllers/PTMatchPlayerController.h"
+#include "Components/SkeletalMeshComponent.h"
 
 // Sets default values
 ATacticalUnitPawn::ATacticalUnitPawn()
@@ -24,11 +25,13 @@ ATacticalUnitPawn::ATacticalUnitPawn()
 	bReplicates = true;
 	SetReplicates(true);
 	//SetReplicateMovement(true);
-	
+
+	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(FName("SkeletalMesh"));
+	WeaponMesh->SetupAttachment(GetMesh());
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-//	GetCapsuleComponent()->SetRelativeLocation(FVector::ZeroVector);
-	//GetMovementComponent()->SetIsReplicated(true);
-	
 }
 
 

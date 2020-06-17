@@ -44,6 +44,9 @@ public:
 	
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class USkeletalMeshComponent* WeaponMesh;
+
 	uint8 GetTeam();
 
 	bool IsAlly(uint8 GivenTeam);
