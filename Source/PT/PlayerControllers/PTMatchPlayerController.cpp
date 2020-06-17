@@ -106,7 +106,7 @@ void APTMatchPlayerController::SelectCharAtMousePos()
 
 void APTMatchPlayerController::MoveSelectedChar()
 {
-	if(SelectedCharacter == nullptr && SelectedGridIndex < 0 && GridFloor == nullptr)
+	if(SelectedCharacter == nullptr || SelectedGridIndex < 0 || GridFloor == nullptr)
 	{
 		return;
 	}
