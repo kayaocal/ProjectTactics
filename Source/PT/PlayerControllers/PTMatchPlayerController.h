@@ -44,12 +44,18 @@ class PT_API APTMatchPlayerController : public APlayerController
 	void SetGridFloor(APTGridFloor* Grid);
 	void SelectCharAtMousePos();
 	void MoveSelectedChar();
+
+	bool IsItMyTurn();
+	
 	ATacticalUnitPawn* SelectedCharacter = nullptr;
 
 	FUnitMoveCommand UnitMoveCommand;
 	
 	UFUNCTION(Server, Reliable)
 	void RPC_MoveToPos(FUnitMoveCommand MoveCommand);
+
+	UFUNCTION(Server, Reliable)
+	void RPC_SkipTurn();
 
 private:
 	APTGridFloor* GridFloor = nullptr;

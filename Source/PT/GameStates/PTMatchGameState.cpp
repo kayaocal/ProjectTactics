@@ -6,7 +6,11 @@
 #include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
+#include "PT/PTGameInstance.h"
 #include "PT/GameModes/PTMatchGameMode.h"
+#include "PT/PlayerControllers/PTMatchPlayerController.h"
+#include "PT/PlayerStates/PTMatchPlayerState.h"
+#include "PT/UI/TurnWidget.h"
 
 APTMatchGameState::APTMatchGameState()
 	:AGameState()
@@ -43,6 +47,7 @@ void APTMatchGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(APTMatchGameState, GameCondition);
+	DOREPLIFETIME(APTMatchGameState, PlayerTurn);
 }
 
 void APTMatchGameState::SetGameCondition(EGameCondition TargetStatus)
@@ -65,4 +70,58 @@ void APTMatchGameState::OnRep_GameConditionChanged()
 	{
 		LOG(" Authority Match status is changed to : %d ", GameCondition);
 	}
+	
 }
+
+void APTMatchGameState::OnRep_PlayerTurnChanged()
+{
+	
+	LOG(" UnAuthorized: PlayerTurn changed to : %d ", PlayerTurn);
+	UPTGameInstance* GameInstance =  Cast<UPTGameInstance>(UGameplayStatics::GetGameInstance(this));
+
+	if(GameInstance != nullptr && GameInstance->TurnUI != nullptr)
+	{
+		APTMatchPlayerController* MatchPlayerController =  Cast<APTMatchPlayerController>( UGameplayStatics::GetPlayerController(this,0));
+
+		if(MatchPlayerController != nullptr)
+		{
+			APTMatchPlayerState* State = Cast<APTMatchPlayerState>(MatchPlayerController->PlayerState);
+
+			LOG("turn change my team = %d", State->Team);
+
+			if(State->Team == PlayerTurn +1 )
+			{
+				LOG("ENABLE BUTTON")
+				GameInstance->TurnUI->EnableTurnButton();
+			}
+			else
+			{
+				LOG("DISABLE BUTTON")
+				GameInstance->TurnUI->DisableTurnButton();
+			}	
+		}
+	}
+}
+
+void APTMatchGameState::SetPlayerTurn(uint8 Turn)
+{
+
+	AGameModeBase* GMode = UGameplayStatics::GetGameMode(this);
+	if(GMode == nullptr)
+	{
+		return;
+	}
+	
+	PlayerTurn = Turn;
+	PlayerTurn %= GMode->GetNumPlayers();
+	if(HasAuthority())
+	{
+		OnRep_PlayerTurnChanged();
+	}
+}
+
+uint8 APTMatchGameState::GetPlayerTurn()
+{
+	return PlayerTurn;
+}
+

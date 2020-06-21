@@ -193,6 +193,7 @@ void APTMatchGameMode::GameResumingConditionStarted()
 	{
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATacticalUnitPlayerStart::StaticClass(), PlayerStartActors);
 		SpawnUnits();
+		GameState->SetPlayerTurn(0);
 	}
 	
 }

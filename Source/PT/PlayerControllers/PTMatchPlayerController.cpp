@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "PT/Prerequisties.h"
+#include "PT/GameStates/PTMatchGameState.h"
 #include "PT/PlayerStates/PTMatchPlayerState.h"
 
 APTMatchPlayerController::APTMatchPlayerController()
@@ -126,6 +127,25 @@ void APTMatchPlayerController::MoveSelectedChar()
 
 }
 
+bool APTMatchPlayerController::IsItMyTurn()
+{
+	APTMatchPlayerState* PState = Cast<APTMatchPlayerState>(PlayerState);
+
+	APTMatchGameState* GState = Cast<APTMatchGameState>(UGameplayStatics::GetGameState(this));
+
+	if(GState == nullptr || PState == nullptr)
+	{
+		return false;
+	}
+
+	if(GState->GetPlayerTurn() +1 != PState->Team )
+	{
+		return false;
+	}
+
+	return true;
+}
+
 void APTMatchPlayerController::RPC_MoveToPos_Implementation(FUnitMoveCommand Vec)
 {
 	TArray<AActor*> Arr;
@@ -137,6 +157,12 @@ void APTMatchPlayerController::RPC_MoveToPos_Implementation(FUnitMoveCommand Vec
 	{
 		LOG("Authory Imp");
 	}
+
+	if(!IsItMyTurn())
+	{
+		return;
+	}
+	
 	for(int i = 0; i < Arr.Num(); i++)
 	{
 		if(Arr[i])
@@ -155,6 +181,16 @@ void APTMatchPlayerController::RPC_MoveToPos_Implementation(FUnitMoveCommand Vec
 				}
 			}
 		}
+	}
+}
+
+
+void APTMatchPlayerController::RPC_SkipTurn_Implementation()
+{
+    APTMatchGameState* GameState = Cast<APTMatchGameState>(UGameplayStatics::GetGameState(this));
+	if(GameState != nullptr)
+	{
+	    GameState->SetPlayerTurn(GameState->GetPlayerTurn()+1);
 	}
 }
 

@@ -31,6 +31,9 @@ private:
 	UPROPERTY(ReplicatedUsing=OnRep_GameConditionChanged, BlueprintReadOnly)
 	uint8 GameCondition = 255;
 
+	
+	UPROPERTY(ReplicatedUsing=OnRep_PlayerTurnChanged, BlueprintReadOnly)
+	uint8 PlayerTurn = 255;
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
@@ -39,4 +42,8 @@ private:
 
 	UFUNCTION()
 	void OnRep_GameConditionChanged();
+	UFUNCTION()
+	void OnRep_PlayerTurnChanged();
+	void SetPlayerTurn(uint8 Turn);
+	uint8 GetPlayerTurn();
 };

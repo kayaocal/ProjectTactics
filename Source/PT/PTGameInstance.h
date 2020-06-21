@@ -12,6 +12,17 @@
 UCLASS()
 class PT_API UPTGameInstance : public UGameInstance
 {
-	GENERATED_BODY()
+public:
+	UPTGameInstance(const FObjectInitializer & ObjectInitializer);
+
+	UFUNCTION(BlueprintCallable)
+	void LoadTurnUI();
 	
+	UPROPERTY(BlueprintReadWrite, Category = "UI")
+	class UTurnWidget* TurnUI;
+private:
+	GENERATED_BODY()
+
+	TSubclassOf<class UUserWidget> TurnUIClass;
+
 };

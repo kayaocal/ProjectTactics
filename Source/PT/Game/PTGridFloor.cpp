@@ -159,7 +159,7 @@ void APTGridFloor::UpdateSelectedGrid(FVector NewPos, bool IsVisible)
 		return;
 	}
 
-	SelectionMesh->SetWorldLocation(FVector(NewPos.X, NewPos.Y, NewPos.Z + 60));
+	SelectionMesh->SetWorldLocation(FVector(NewPos.X, NewPos.Y, NewPos.Z + 25));
 	SelectionMesh->SetVisibility(IsVisible);
 	
 }
